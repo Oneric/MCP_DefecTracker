@@ -1,0 +1,530 @@
+{
+  "swagger": "2.0",
+  "info": { "title": "Zephyr Server API (v1)", "version": "1.0" },
+  "securityDefinitions": { "basic": { "type": "basic" } },
+  "definitions": {
+    "testresult": {
+      "type": "object",
+      "properties": {
+        "projectKey": { "type": "string" },
+        "testCaseKey": { "type": "string" },
+        "status": { "type": "string" },
+        "environment": { "type": "string" },
+        "comment": { "type": "string" },
+        "userKey": { "type": "string" },
+        "executionTime": { "type": "integer" },
+        "executionDate": { "type": "string", "format": "date-time" },
+        "scriptResults": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": { "type": "integer" },
+              "status": { "type": "string" },
+              "comment": { "type": "string" }
+            },
+            "required": ["index", "status"]
+          }
+        }
+      },
+      "required": ["projectKey", "testCaseKey"]
+    },
+    "embeddedtestresult": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" },
+        "environment": { "type": "string" },
+        "comment": { "type": "string" },
+        "userKey": { "type": "string" },
+        "executionTime": { "type": "integer" },
+        "executionDate": { "type": "string", "format": "date-time" },
+        "scriptResults": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": { "type": "integer" },
+              "status": { "type": "string" },
+              "comment": { "type": "string" }
+            },
+            "required": ["index", "status"]
+          }
+        }
+      }
+    },
+    "testcase": {
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "projectKey": { "type": "string" },
+        "name": { "type": "string" },
+        "objective": { "type": "string" },
+        "precondition": { "type": "string" },
+        "folder": { "type": "string" },
+        "status": { "type": "string" },
+        "priority": { "type": "string" },
+        "component": { "type": "string" },
+        "owner": { "type": "string" },
+        "estimatedTime": { "type": "integer" },
+        "labels": { "type": "array", "items": { "type": "string" } },
+        "testScript": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string" },
+            "text": { "type": "string" },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "index": { "type": "integer" },
+                  "description": { "type": "string" },
+                  "testData": { "type": "string" },
+                  "expectedResult": { "type": "string" }
+                },
+                "required": ["index"]
+              }
+            }
+          },
+          "required": ["type"]
+        }
+      },
+      "required": ["key", "projectKey", "name", "status", "priority", "testScript"]
+    },
+    "testrun": {
+      "type": "object",
+      "properties": {
+        "projectKey": { "type": "string" },
+        "name": { "type": "string" },
+        "testPlanKey": { "type": "string" },
+        "status": { "type": "string" },
+        "folder": { "type": "string" },
+        "iteration": { "type": "string" },
+        "version": { "type": "string" },
+        "owner": { "type": "string" },
+        "plannedStartDate": { "type": "string", "format": "date-time" },
+        "plannedEndDate": { "type": "string", "format": "date-time" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "testCaseKey": { "type": "string" },
+              "environment": { "type": "string" },
+              "userKey": { "type": "string" }
+            },
+            "required": ["testCaseKey"]
+          }
+        }
+      },
+      "required": ["projectKey", "name"]
+    },
+    "folder": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "projectKey": { "type": "string" },
+        "type": { "type": "string" }
+      },
+      "required": ["name", "projectKey", "type"]
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "projectKey": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name", "projectKey"]
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "projectKey": { "type": "string" },
+        "enable": { "type": "boolean" }
+      },
+      "required": ["projectKey", "enable"]
+    },
+    "customfield": {
+      "type": "object",
+      "properties": {
+        "projectKey": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "required": { "default": false, "type": "boolean" },
+        "type": { "type": "string" },
+        "category": { "type": "string" }
+      },
+      "required": ["projectKey", "name", "type", "category"]
+    },
+    "customfieldoption": {
+      "type": "object",
+      "properties": { "name": { "type": "string" } },
+      "required": ["name"]
+    },
+    "executiondeletion": {
+      "type": "object",
+      "properties": {
+        "deleteExecutionsCreatedBefore": { "type": "string", "format": "date-time" },
+        "projectKey": { "type": "string" }
+      },
+      "required": ["deleteExecutionsCreatedBefore"]
+    }
+  },
+  "paths": {
+    "/testcase": {
+      "post": {
+        "operationId": "POST_testcase",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/testcase" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/testcase/{testCaseKey}": {
+      "get": {
+        "operationId": "GET_testcase-testCaseKey",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "name": "fields", "in": "query", "type": "string" }]
+      },
+      "put": {
+        "operationId": "PUT_testcase-testCaseKey",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/testcase" }, "in": "body", "name": "body" }]
+      },
+      "delete": {
+        "operationId": "DELETE_testcase-testCaseKey",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testCaseKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testcase/{testCaseKey}/attachments": {
+      "post": {
+        "operationId": "POST_testcase-testCaseKey-attachments",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [{ "in": "formData", "name": "file", "type": "file", "required": true }]
+      },
+      "get": {
+        "operationId": "GET_testcase-testCaseKey-attachments",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testCaseKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testcase/{testCaseKey}/testresult/latest": {
+      "get": {
+        "operationId": "GET_testcase-testCaseKey-testresult-latest",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testCaseKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testcase/{testCaseKey}/step/{stepIndex}/attachments": {
+      "get": {
+        "operationId": "GET_testcase-testCaseKey-step-stepIndex-attachments",
+        "security": [{ "basic": [] }]
+      },
+      "post": {
+        "operationId": "POST_testcase-testCaseKey-step-stepIndex-attachments",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [{ "in": "formData", "name": "file", "type": "file", "required": true }]
+      },
+      "parameters": [
+        { "name": "stepIndex", "in": "path", "type": "integer", "required": true },
+        { "name": "testCaseKey", "in": "path", "type": "string", "required": true }
+      ]
+    },
+    "/testcase/search": {
+      "get": {
+        "operationId": "GET_testcase-search",
+        "security": [{ "basic": [] }],
+        "parameters": [
+          { "name": "fields", "in": "query", "type": "string" },
+          { "name": "query", "in": "query", "type": "string" },
+          { "name": "startAt", "in": "query", "type": "integer" },
+          { "name": "maxResults", "in": "query", "type": "integer" }
+        ]
+      }
+    },
+    "/testplan": {
+      "post": {
+        "operationId": "POST_testplan",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "type": "string" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/testplan/{testPlanKey}": {
+      "put": {
+        "operationId": "PUT_testplan-testPlanKey",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "type": "string" }, "in": "body", "name": "body" }]
+      },
+      "get": {
+        "operationId": "GET_testplan-testPlanKey",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "name": "fields", "in": "query", "type": "string" }]
+      },
+      "delete": {
+        "operationId": "DELETE_testplan-testPlanKey",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testPlanKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testplan/{testPlanKey}/attachments": {
+      "post": {
+        "operationId": "POST_testplan-testPlanKey-attachments",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [{ "in": "formData", "name": "file", "type": "file", "required": true }]
+      },
+      "get": {
+        "operationId": "GET_testplan-testPlanKey-attachments",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testPlanKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testplan/search": {
+      "get": {
+        "operationId": "GET_testplan-search",
+        "security": [{ "basic": [] }],
+        "parameters": [
+          { "name": "fields", "in": "query", "type": "string" },
+          { "name": "query", "in": "query", "type": "string" },
+          { "name": "startAt", "in": "query", "type": "integer" },
+          { "name": "maxResults", "in": "query", "type": "integer" }
+        ]
+      }
+    },
+    "/testrun": {
+      "post": {
+        "operationId": "POST_testrun",
+        "parameters": [{ "schema": { "$ref": "#/definitions/testrun" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/testrun/{testRunKey}": {
+      "get": {
+        "operationId": "GET_testrun-testRunKey",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "name": "fields", "in": "query", "type": "string" }]
+      },
+      "delete": {
+        "operationId": "DELETE_testrun-testRunKey",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testRunKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testrun/{testRunKey}/attachments": {
+      "post": {
+        "operationId": "POST_testrun-testRunKey-attachments",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [{ "in": "formData", "name": "file", "type": "file", "required": true }]
+      },
+      "get": {
+        "operationId": "GET_testrun-testRunKey-attachments",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testRunKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testrun/{testRunKey}/testcase/{testCaseKey}/testresult": {
+      "post": {
+        "operationId": "POST_testrun-testRunKey-testcase-testCaseKey-testresult",
+        "security": [{ "basic": [] }],
+        "parameters": [
+          { "schema": { "$ref": "#/definitions/embeddedtestresult" }, "in": "body", "name": "body" },
+          { "name": "environment", "in": "query", "type": "string", "required": true },
+          { "name": "userKey", "in": "query", "type": "string", "required": true }
+        ]
+      },
+      "put": {
+        "operationId": "PUT_testrun-testRunKey-testcase-testCaseKey-testresult",
+        "security": [{ "basic": [] }],
+        "parameters": [
+          { "schema": { "$ref": "#/definitions/embeddedtestresult" }, "in": "body", "name": "body" },
+          { "name": "environment", "in": "query", "type": "string", "required": true },
+          { "name": "userKey", "in": "query", "type": "string", "required": true }
+        ]
+      },
+      "parameters": [
+        { "name": "testCaseKey", "in": "path", "type": "string", "required": true },
+        { "name": "testRunKey", "in": "path", "type": "string", "required": true }
+      ]
+    },
+    "/testrun/{testRunKey}/testresults": {
+      "post": {
+        "operationId": "POST_testrun-testRunKey-testresults",
+        "security": [{ "basic": [] }],
+        "parameters": [
+          { "schema": { "$ref": "#/definitions/embeddedtestresult" }, "in": "body", "name": "body" },
+          { "name": "environment", "in": "query", "type": "string", "required": true },
+          { "name": "userKey", "in": "query", "type": "string", "required": true }
+        ]
+      },
+      "get": {
+        "operationId": "GET_testrun-testRunKey-testresults",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testRunKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/testrun/search": {
+      "get": {
+        "operationId": "GET_testrun-search",
+        "security": [{ "basic": [] }],
+        "parameters": [
+          { "name": "fields", "in": "query", "type": "string" },
+          { "name": "query", "in": "query", "type": "string" },
+          { "name": "startAt", "in": "query", "type": "integer" },
+          { "name": "maxResults", "in": "query", "type": "integer" }
+        ]
+      }
+    },
+    "/testresult": {
+      "post": {
+        "operationId": "POST_testresult",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/testresult" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/testresult/{testResultId}/attachments": {
+      "post": {
+        "operationId": "POST_testresult-testResultId-attachments",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [{ "in": "formData", "name": "file", "type": "file", "required": true }]
+      },
+      "get": {
+        "operationId": "GET_testresult-testResultId-attachments",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "testResultId", "in": "path", "type": "integer", "required": true }]
+    },
+    "/testresult/{testResultId}/step/{stepIndex}/attachments": {
+      "post": {
+        "operationId": "POST_testresult-testResultId-step-stepIndex-attachments",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [{ "in": "formData", "name": "file", "type": "file", "required": true }]
+      },
+      "get": {
+        "operationId": "GET_testresult-testResultId-step-stepIndex-attachments",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [
+        { "name": "testResultId", "in": "path", "type": "integer", "required": true },
+        { "name": "stepIndex", "in": "path", "type": "integer", "required": true }
+      ]
+    },
+    "/issuelink/{issueKey}/testcases": {
+      "get": {
+        "operationId": "GET_issuelink-issueKey-testcases",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "name": "fields", "in": "query", "type": "string" }]
+      },
+      "parameters": [{ "name": "issueKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/folder": {
+      "post": {
+        "operationId": "POST_folder",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/folder" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/folder/{folderId}": {
+      "put": {
+        "operationId": "PUT_folder-folderId",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/folder" }, "in": "body", "name": "body" }]
+      },
+      "parameters": [{ "name": "folderId", "in": "path", "type": "integer", "required": true }]
+    },
+    "/attachments/{id}": {
+      "delete": {
+        "operationId": "DELETE_attachments-id",
+        "security": [{ "basic": [] }]
+      },
+      "parameters": [{ "name": "id", "in": "path", "type": "string", "required": true }]
+    },
+    "/environments": {
+      "get": {
+        "operationId": "GET_environments",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "name": "projectKey", "in": "query", "type": "string", "required": true }]
+      },
+      "post": {
+        "operationId": "POST_environments",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/environment" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/automation/execution/{projectKey}": {
+      "post": {
+        "operationId": "POST_automation-execution-projectKey",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          { "in": "formData", "name": "file", "type": "file", "required": true },
+          { "in": "formData", "name": "testCycle", "type": "string" }
+        ]
+      },
+      "parameters": [{ "name": "projectKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/automation/execution/cucumber/{projectKey}": {
+      "post": {
+        "operationId": "POST_automation-execution-cucumber-projectKey",
+        "security": [{ "basic": [] }],
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          { "in": "formData", "name": "file", "type": "file", "required": true },
+          { "in": "formData", "name": "testCycle", "type": "string" }
+        ]
+      },
+      "parameters": [{ "name": "projectKey", "in": "path", "type": "string", "required": true }]
+    },
+    "/automation/testcases": {
+      "get": {
+        "operationId": "GET_automation-testcases",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "name": "tql", "in": "query", "type": "string", "required": true }]
+      }
+    },
+    "/project": {
+      "post": {
+        "operationId": "POST_project",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/project" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/customfield": {
+      "post": {
+        "operationId": "POST_customfield",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/customfield" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/customfield/{customFieldId}/option": {
+      "post": {
+        "operationId": "POST_customfield-customFieldId-option",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/customfieldoption" }, "in": "body", "name": "body" }]
+      },
+      "parameters": [{ "name": "customFieldId", "in": "path", "type": "string", "required": true }]
+    },
+    "/delete/executiondeletion": {
+      "post": {
+        "operationId": "POST_delete-executiondeletion",
+        "security": [{ "basic": [] }],
+        "parameters": [{ "schema": { "$ref": "#/definitions/executiondeletion" }, "in": "body", "name": "body" }]
+      }
+    },
+    "/delete/executiondeletion/status": {
+      "get": {
+        "operationId": "GET_delete-executiondeletion-status",
+        "security": [{ "basic": [] }]
+      }
+    },
+    "/delete/executiondeletion/cancel": {
+      "post": {
+        "operationId": "POST_delete-executiondeletion-cancel",
+        "security": [{ "basic": [] }]
+      }
+    }
+  }
+}

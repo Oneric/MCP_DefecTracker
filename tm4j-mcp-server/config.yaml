@@ -1,0 +1,41 @@
+# Конфигурация TM4J MCP Server
+
+jira:
+  url: "https://jira.example.com"
+  username: "admin"
+  api_token: "your-jira-api-token"
+  projects:
+    - "DTP"
+
+tm4j:
+  url: "https://tm4j.example.com"
+  username: "admin"
+  api_token: "your-tm4j-api-token"
+  default_folder: "Default"
+
+confluence:
+  url: "https://confluence.example.com"
+  username: "admin"
+  api_token: "your-confluence-api-token"
+  default_space: "DTP"
+
+storage:
+  path: "./data/test_sessions.db"
+
+scheduler:
+  enabled: true
+  check_interval: 300  # 5 минут
+  max_concurrent_sessions: 2
+  max_tasks_per_session: 100
+
+playwright:
+  docker_gateway: "docker mcp gateway run --profile playwright"
+  test_suite_path: "/tests"
+  results_dir: "/results"
+  browser: "chromium"
+  headless: true
+  timeout: 30000
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -1,0 +1,44 @@
+[project]
+name = "tm4j-mcp-server"
+version = "0.1.0"
+description = "MCP server for TM4J, Jira Server API and Confluence integration"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31.0",
+    "sqlalchemy>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.0",
+    "aiohttp>=3.9.0",
+    "mcp>=1.0.0",
+]
+
+[project.scripts]
+tm4j-mcp = "tm4j_mcp_server.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tm4j_mcp_server"]
+include = [
+    "/tm4j_mcp_server/__init__.py",
+    "/tm4j_mcp_server/config.py",
+    "/tm4j_mcp_server/main.py",
+    "/tm4j_mcp_server/scheduler.py",
+    "/tm4j_mcp_server/clients/__init__.py",
+    "/tm4j_mcp_server/clients/tm4j/__init__.py",
+    "/tm4j_mcp_server/clients/tm4j/client.py",
+    "/tm4j_mcp_server/clients/tm4j/models.py",
+    "/tm4j_mcp_server/clients/jira/__init__.py",
+    "/tm4j_mcp_server/clients/jira/client.py",
+    "/tm4j_mcp_server/clients/jira/models.py",
+    "/tm4j_mcp_server/clients/confluence/__init__.py",
+    "/tm4j_mcp_server/clients/confluence/client.py",
+    "/tm4j_mcp_server/clients/confluence/models.py",
+    "/tm4j_mcp_server/storage/__init__.py",
+    "/tm4j_mcp_server/storage/storage.py",
+    "/tm4j_mcp_server/playwright/__init__.py",
+    "/tm4j_mcp_server/playwright/playwright_client.py",
+]

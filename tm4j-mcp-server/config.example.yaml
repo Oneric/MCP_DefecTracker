@@ -1,0 +1,54 @@
+# Конфигурация TM4J MCP сервера
+
+# Jira Server API
+jira:
+  url: "https://jira.rtk-element.ru"
+  username: "your_username"
+  password: "your_password"
+  # или токен
+  # token: "your_token"
+
+# TM4J API
+tm4j:
+  url: "https://jira.rtk-element.ru/rest/tests/1.0"
+  username: "your_username"
+  password: "your_password"
+
+# Confluence API (опционально)
+confluence:
+  url: "https://jira.rtk-element.ru"
+  username: "your_username"
+  password: "your_password"
+
+# Настройки сессий
+sessions:
+  # Максимальное количество одновременных сессий
+  max_concurrent_sessions: 2
+  # Папка для SQLite базы данных
+  db_path: "./data/test_sessions.db"
+
+# Настройки планировщика
+scheduler:
+  # Интервал проверки в минутах
+  check_interval_minutes: 15
+  # Статусы для автоматического запуска (по умолчанию: In Progress, On Hold)
+  auto_run_statuses:
+    - "In Progress"
+    - "On Hold"
+  # Кастомное поле для фильтрации
+  automated_field: "Automated"
+  automated_field_value: "true"
+
+# Настройки тестирования
+testing:
+  # Максимальная длина контекста на задачу
+  max_context_length: 8000
+  # Количество попыток при падении
+  max_retries: 2
+  # Время ожидания между попытками (секунды)
+  retry_delay_seconds: 300
+
+# Логирование
+logging:
+  level: "INFO"
+  file: "./logs/tm4j_mcp.log"
