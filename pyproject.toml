@@ -1,0 +1,53 @@
+[project]
+name = "tm4j-mcp-server"
+version = "1.0.0"
+description = "MCP-сервер для TM4J (Zephyr Scale) API"
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp>=2.0.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "tenacity>=8.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+
+[project.scripts]
+tm4j-mcp = "tm4j_mcp.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tm4j_mcp"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.0.0",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+ignore = [
+    "BLE001",  # catch Exception — намеренный паттерн для MCP-сервера
+    "S110",    # try-except-pass — намеренное подавление необязательных ошибок
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+python_classes = ["test_*"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
