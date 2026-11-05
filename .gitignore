@@ -3,50 +3,45 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
 *.egg
-
-# Virtual environments
+*.egg-info/
+dist/
+build/
+*.whl
+.eggs/
+.venv/
 venv/
-ENV/
 env/
-.venv
+
+# uv
+uv.lock
+
+# Environment
+.env
+
+# Configuration with credentials
+mcp.json
 
 # IDE
 .vscode/
 .idea/
+.roo/
+
+# Linter/Formatter cache
+.ruff_cache/
 *.swp
 *.swo
 *~
-
-# Logs
-logs/
-*.log
-
-# Environment variables
-.env
-
-# Docker
-Dockerfile
-Dockerfile.*
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Data
-data/*.json
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Logs
+*.log
